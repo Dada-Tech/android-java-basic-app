@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "cs-5520-mobile"
+rootProject.name = "NUMAD23Fa_DavidDada"
 include ':app'

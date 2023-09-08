@@ -1,4 +1,4 @@
-package edu.northeastern.cs_5520_mobile;
+package edu.northeastern.numad23fa_daviddada;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("edu.northeastern.cs_5520_mobile", appContext.getPackageName());
+        assertEquals("edu.northeastern.numad23fa_daviddada", appContext.getPackageName());
     }
 }

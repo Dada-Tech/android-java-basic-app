@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'edu.northeastern.cs_5520_mobile'
+    namespace 'edu.northeastern.numad23fa_daviddada'
     compileSdk 33
 
     defaultConfig {
-        applicationId "edu.northeastern.cs_5520_mobile"
+        applicationId "edu.northeastern.numad23fa_daviddada"
         minSdk 27
         targetSdk 33
         versionCode 1

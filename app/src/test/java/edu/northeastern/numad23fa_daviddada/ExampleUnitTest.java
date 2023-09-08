@@ -1,4 +1,4 @@
-package edu.northeastern.cs_5520_mobile;
+package edu.northeastern.numad23fa_daviddada;
 
 import org.junit.Test;
 

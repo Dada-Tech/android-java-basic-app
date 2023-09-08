@@ -1,4 +1,4 @@
-package edu.northeastern.cs_5520_mobile;
+package edu.northeastern.numad23fa_daviddada;
 
 import androidx.appcompat.app.AppCompatActivity;
 
