@@ -14,4 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NUMAD23Fa_DavidDada"
-include ':app'
+include(":app")
+ 
