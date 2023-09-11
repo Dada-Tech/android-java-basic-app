@@ -4,7 +4,7 @@ plugins {
 
 android {
     signingConfigs {
-        create("release") {
+        create("clasroom key") {
             storeFile = file("/Users/daviddada/Dropbox/Northeastern/Courses/CS5520 Mobile Development/keystore5520")
             storePassword = "keystore5520"
             keyPassword = "keystore5520"
@@ -28,7 +28,10 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("clasroom key")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
