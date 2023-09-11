@@ -1,0 +1,1 @@
+/Users/daviddada/Library/Android/sdk/build-tools/34.0.0/apksigner verify --verbose ./app/release/NUMAD23Fa_DavidDada.apk
