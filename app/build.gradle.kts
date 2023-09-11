@@ -3,13 +3,21 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/daviddada/Dropbox/Northeastern/Courses/CS5520 Mobile Development/keystore5520")
+            storePassword = "keystore5520"
+            keyPassword = "keystore5520"
+            keyAlias = "classroom key"
+        }
+    }
     namespace = "edu.northeastern.numad23fa_daviddada"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "edu.northeastern.numad23fa_daviddada"
         minSdk = 27
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -20,6 +28,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
