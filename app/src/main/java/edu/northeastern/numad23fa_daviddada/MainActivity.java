@@ -15,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
 
         final Button aboutMeButton = findViewById(R.id.button_about_me);
         aboutMeButton.setOnClickListener(v -> Toast.makeText(v.getContext(), "David Dada\ndada.d@northeastern.edu", Toast.LENGTH_SHORT).show());
+
+        final Button clickyClickyButton = findViewById(R.id.button_clicky);
+
+        aboutMeButton.setOnClickListener(v -> System.out.println("new activity"));
     }
 
 
