@@ -24,6 +24,9 @@
         <activity
             android:name=".ButtonGridExampleActivity"
             android:exported="true" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

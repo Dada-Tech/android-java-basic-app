@@ -3,7 +3,6 @@ package edu.northeastern.numad23fa_daviddada;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,13 +14,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final Button aboutMeButton = findViewById(R.id.button_about_me);
-        aboutMeButton.setOnClickListener(v -> Toast.makeText(v.getContext(), "David Dada\ndada.d@northeastern.edu", Toast.LENGTH_SHORT).show());
+        aboutMeButton.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
 
         final Button clickyButton = findViewById(R.id.button_clicky);
-        clickyButton.setOnClickListener(v -> {
-            final Intent intent = new Intent(this, ButtonGridExampleActivity.class);
-            startActivity(intent);
-        });
+        clickyButton.setOnClickListener(v -> startActivity(new Intent(this, ButtonGridExampleActivity.class)));
     }
 
 }
