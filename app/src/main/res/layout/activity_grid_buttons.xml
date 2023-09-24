@@ -70,6 +70,7 @@
         app:layout_constraintTop_toBottomOf="@id/clicky_C" />
 
     <TextView
+        android:id="@+id/pressed_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
