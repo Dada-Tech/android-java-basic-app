@@ -2,6 +2,8 @@
     <string name="app_name">NUMAD23Fa_DavidDada</string>
     <string name="about_me">About Me</string>
     <string name="clicky_clicky">Clicky Clicky</string>
+    <string name="link_collector_button_text">Link Collector</string>
     <string name="pressed">Pressed:</string>
     <string name="personal_info">David Dada\ndada.d@northeastern.edu</string>
+    <string name="link_item_text">link 1</string>
 </resources>

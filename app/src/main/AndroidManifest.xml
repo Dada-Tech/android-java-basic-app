@@ -27,6 +27,9 @@
         <activity
             android:name=".AboutActivity"
             android:exported="true" />
+        <activity
+            android:name=".LinkCollectorActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

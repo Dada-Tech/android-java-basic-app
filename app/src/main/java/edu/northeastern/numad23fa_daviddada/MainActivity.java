@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
         final Button clickyButton = findViewById(R.id.button_clicky);
         clickyButton.setOnClickListener(v -> startActivity(new Intent(this, ButtonGridExampleActivity.class)));
+
+        final Button linkCollectorButton = findViewById(R.id.button_link_collector);
+        linkCollectorButton.setOnClickListener(v -> startActivity(new Intent(this, LinkCollectorActivity.class)));
     }
 
 }
