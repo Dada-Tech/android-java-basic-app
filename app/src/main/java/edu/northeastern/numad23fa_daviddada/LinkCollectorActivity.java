@@ -9,7 +9,7 @@ public class LinkCollectorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.link_collector);
+        setContentView(R.layout.activity_link_collector);
 
         final String[] data = {"hello", "world", "my", "name", "is", "slim", "shady"};
 
