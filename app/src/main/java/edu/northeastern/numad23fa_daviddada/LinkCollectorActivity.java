@@ -51,15 +51,10 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
 
         simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
         Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
-        snackbar.setAction("UNDO", new UndoListener());
-        snackbar.show();
-    }
-
-    public static class UndoListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
+        snackbar.setAction("UNDO", (View v) -> {
             System.out.println("WILL UNDO");
-        }
+        });
+        snackbar.show();
     }
 
 }
