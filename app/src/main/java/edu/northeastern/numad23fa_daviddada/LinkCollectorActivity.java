@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class LinkCollectorActivity extends AppCompatActivity implements HyperlinkDialog.HyperlinkDialogListener {
 
     private final ArrayList<SimpleLink> simpleLinksModels = new ArrayList<>();
+    private LinkAdapter simpleLinkAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +27,8 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         // SimpleLink Adapter
-        LinkAdapter customAdapter = new LinkAdapter(simpleLinksModels);
-        recyclerView.setAdapter(customAdapter);
+        simpleLinkAdapter = new LinkAdapter(simpleLinksModels);
+        recyclerView.setAdapter(simpleLinkAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // fab handle click using ImageButton or FloatingActionButton
@@ -51,8 +52,14 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
 
         simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
         Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
+
         snackbar.setAction("UNDO", (View v) -> {
-            System.out.println("WILL UNDO");
+            if (!simpleLinksModels.isEmpty()) {
+                simpleLinksModels.remove(simpleLinksModels.size() - 1);
+
+                // notify adapter about change because it doesn't infer automatically
+                simpleLinkAdapter.notifyItemRemoved(simpleLinksModels.size());
+            }
         });
         snackbar.show();
     }
