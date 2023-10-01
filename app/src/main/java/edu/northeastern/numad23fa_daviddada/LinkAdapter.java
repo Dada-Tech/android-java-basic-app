@@ -68,7 +68,11 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
         // regular click listener
         cardView.setOnClickListener(v -> {
             try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(simpleLinksData.get(position).url));
+                String url = simpleLinksData.get(position).url;
+                String urlLink = url.startsWith("http://") || url.startsWith("https://") ?
+                        url : "http://" + url;
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlLink));
                 v.getContext().startActivity(intent);
 
             } catch (Exception e) {

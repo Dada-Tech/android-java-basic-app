@@ -33,10 +33,10 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         // Temporary test data
-        simpleLinksModels.add(new SimpleLink("test 1", "https://google.com"));
-        simpleLinksModels.add(new SimpleLink("test 2", "https://facebook.com"));
-        simpleLinksModels.add(new SimpleLink("test 3", "https://daviddada.com"));
-        simpleLinksModels.add(new SimpleLink("test 4", "https://wydget.com"));
+        simpleLinksModels.add(new SimpleLink("test 1", "google.com"));
+        simpleLinksModels.add(new SimpleLink("test 2", "facebook.com"));
+        simpleLinksModels.add(new SimpleLink("test 3", "daviddada.com"));
+        simpleLinksModels.add(new SimpleLink("test 4", "http://wydget.ca"));
         simpleLinksModels.add(new SimpleLink("test 5", "https://runescape.com"));
 
         // SimpleLink Adapter
