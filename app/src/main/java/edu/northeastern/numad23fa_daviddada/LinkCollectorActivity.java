@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,17 +25,26 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_link_collector);
 
+        // fab handle click using ImageButton or FloatingActionButton
+        final ImageButton newHyperlinkButton = findViewById(R.id.new_hyperlink_url_button);
+        newHyperlinkButton.setOnClickListener(v -> showHyperlinkDialog());
+
         // SimpleLink View
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
+
+        // Temporary test data
+        simpleLinksModels.add(new SimpleLink("test 1", "google.com"));
+        simpleLinksModels.add(new SimpleLink("test 2", "facebook.com"));
+        simpleLinksModels.add(new SimpleLink("test 3", "daviddada.com"));
+        simpleLinksModels.add(new SimpleLink("test 4", "wydget.com"));
+        simpleLinksModels.add(new SimpleLink("test 5", "runescape.com"));
 
         // SimpleLink Adapter
         simpleLinkAdapter = new LinkAdapter(simpleLinksModels);
         recyclerView.setAdapter(simpleLinkAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // fab handle click using ImageButton or FloatingActionButton
-        final ImageButton newHyperlinkButton = findViewById(R.id.new_hyperlink_url_button);
-        newHyperlinkButton.setOnClickListener(v -> showHyperlinkDialog());
+        new ItemTouchHelper(new SimpleLinkSwipeCallback()).attachToRecyclerView(recyclerView);
     }
 
     public void showHyperlinkDialog() {
@@ -62,6 +73,29 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
             }
         });
         snackbar.show();
+    }
+
+    // Simple Link ItemTouchHelper
+    public class SimpleLinkSwipeCallback extends ItemTouchHelper.SimpleCallback {
+
+        // Swipe left trigger swipe callback, which deletes
+        public SimpleLinkSwipeCallback() {
+            super(0, ItemTouchHelper.LEFT);
+        }
+
+        // ignore onMove for RTL/LTR swipes
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+
+            simpleLinksModels.remove(position);
+            simpleLinkAdapter.notifyItemRemoved(position);
+        }
     }
 
 }

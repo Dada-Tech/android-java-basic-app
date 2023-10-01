@@ -31,24 +31,16 @@ public class HyperlinkDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
         // Inflate the custom layout for the dialog.
-        View dialogView = inflater.inflate(R.layout.create_link_dialogue, null);
+        View dialogView = inflater.inflate(R.layout.create_link_dialog, null);
 
         // dialog text fields
         EditText linkNameEditText = dialogView.findViewById(R.id.create_link_field_title);
         EditText linkUrlEditText = dialogView.findViewById(R.id.create_link_field_url);
 
         // Inflate and set the layout for the dialog.
-        // Pass null as the parent view because it's going in the dialog layout.
         builder.setView(dialogView)
-                // Add action buttons
-                .setPositiveButton("Create", (dialog, id) -> {
-                    listener.onDialogPositiveClick(HyperlinkDialog.this, linkNameEditText.getText().toString(), linkUrlEditText.getText().toString());
-                })
-                .setNegativeButton("Cancel",
-                        (dialog, id) -> {
-                            System.out.println("Cancel pressed");
-                        }
-                );
+                .setPositiveButton("Create", (dialog, id) -> listener.onDialogPositiveClick(HyperlinkDialog.this, linkNameEditText.getText().toString(), linkUrlEditText.getText().toString()))
+                .setNegativeButton("Cancel", (dialog, id) -> System.out.println("Cancel pressed"));
         return builder.create();
     }
 
