@@ -68,7 +68,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
         // regular click listener
         cardView.setOnClickListener(v -> {
             try {
-                String url = simpleLinksData.get(position).url;
+                String url = simpleLinksData.get(viewHolder.getAdapterPosition()).url;
                 String urlLink = url.startsWith("http://") || url.startsWith("https://") ?
                         url : "http://" + url;
 
@@ -76,6 +76,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
                 v.getContext().startActivity(intent);
 
             } catch (Exception e) {
+                e.printStackTrace();
                 Snackbar.make((View) cardView.getParent(), "Unable to Open URL; likely malformed", Snackbar.LENGTH_SHORT).show();
             }
         });

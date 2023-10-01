@@ -1,6 +1,7 @@
 package edu.northeastern.numad23fa_daviddada;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -63,7 +64,6 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
 
         simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
         Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
-        simpleLinkAdapter.notifyItemInserted(simpleLinksModels.size());
 
         snackbar.setAction("UNDO", (View v) -> {
             if (!simpleLinksModels.isEmpty()) {
@@ -94,8 +94,10 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
 
+            Log.d("LinkActivity", "Before removal: " + simpleLinkAdapter.getItemCount());
             simpleLinksModels.remove(position);
             simpleLinkAdapter.notifyItemRemoved(position);
+            Log.d("LinkActivity", "After removal: " + simpleLinkAdapter.getItemCount());
         }
     }
 
