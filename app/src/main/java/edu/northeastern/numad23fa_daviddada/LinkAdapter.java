@@ -1,4 +1,5 @@
 package edu.northeastern.numad23fa_daviddada;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,39 +8,42 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
 
-    private String[] localDataSet;
+    private final ArrayList<SimpleLink> simpleLinksData;
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
+    // Grabbing views from recycler view row layout. Similar to "OnCreate" Methods
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+        private final TextView textViewTitle;
+        private final TextView textViewUrl;
 
         public ViewHolder(View view) {
             super(view);
-            // Define click listener for the ViewHolder's View
-            textView = (TextView) view.findViewById(R.id.link_item_textview);
+            // grab views and store them
+            textViewTitle = view.findViewById(R.id.simple_link_textview_title);
+            textViewUrl = view.findViewById(R.id.simple_link_textview_url);
         }
 
-        public TextView getTextView() {
-            return textView;
+        // public getters for better practice than touching class variables directly
+        public TextView getTextViewTitle() {
+            return textViewTitle;
+        }
+
+        // public getters for better practice than touching class variables directly
+        public TextView getTextViewUrl() {
+            return textViewUrl;
         }
     }
 
-    /**
-     * Initialize the dataset of the Adapter
-     *
-     * @param dataSet String[] containing the data to populate views to be used
-     * by RecyclerView
-     */
-    public LinkAdapter(String[] dataSet) {
-        localDataSet = dataSet;
+    // dataset init
+    public LinkAdapter(ArrayList<SimpleLink> dataSet) {
+        this.simpleLinksData = dataSet;
     }
 
-    // Create new views (invoked by the layout manager)
+    // Create new views (invoked by the layout manager).
+    // This is where to inflate layout and giving the view to each of the items in the list
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -50,19 +54,18 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    // Assigning values to each of the rows based on the position of the recycler view.
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-        viewHolder.getTextView().setText(localDataSet[position]);
+        viewHolder.getTextViewTitle().setText(simpleLinksData.get(position).title);
+        viewHolder.getTextViewUrl().setText(simpleLinksData.get(position).url);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
+    // Simple total items. Helps with binding process when updating the views
     @Override
     public int getItemCount() {
-        return localDataSet.length;
+        return simpleLinksData.size();
     }
 }
 
