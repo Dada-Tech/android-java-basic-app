@@ -1,14 +1,11 @@
 package edu.northeastern.numad23fa_daviddada;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class LinkCollectorActivity extends AppCompatActivity implements HyperlinkDialog.HyperlinkDialogListener {
     @Override
@@ -36,12 +33,9 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        System.out.println("POSITIVE");
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        System.out.println("NEGATIVE");
+    public void onDialogPositiveClick(DialogFragment dialog, String linkTitle, String linkUrl) {
+        System.out.println(">>>>>>>>>>>>> LinkCollector Positive Callback");
+        System.out.println(linkTitle);
+        System.out.println(linkUrl);
     }
 }

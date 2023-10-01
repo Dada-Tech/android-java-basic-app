@@ -3,14 +3,22 @@ package edu.northeastern.numad23fa_daviddada;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 public class HyperlinkDialog extends DialogFragment {
+
+    // The activity that creates an instance of this dialog fragment must
+    // implement this interface to receive event callbacks. Each method passes
+    // the DialogFragment in case the host needs to query it.
+    public interface HyperlinkDialogListener {
+        void onDialogPositiveClick(DialogFragment dialog, String linkTitle, String linkUrl);
+    }
 
     // Use this instance of the interface to deliver action events.
     HyperlinkDialogListener listener;
@@ -22,32 +30,26 @@ public class HyperlinkDialog extends DialogFragment {
         // Get the layout inflater.
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
+        // Inflate the custom layout for the dialog.
+        View dialogView = inflater.inflate(R.layout.create_link_dialogue, null);
+
+        // dialog text fields
+        EditText linkNameEditText = dialogView.findViewById(R.id.create_link_field_title);
+        EditText linkUrlEditText = dialogView.findViewById(R.id.create_link_field_url);
+
         // Inflate and set the layout for the dialog.
         // Pass null as the parent view because it's going in the dialog layout.
-        builder.setView(inflater.inflate(R.layout.create_link_dialogue, null))
+        builder.setView(dialogView)
                 // Add action buttons
-                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        System.out.println("Sign in pressed");
-                    }
+                .setPositiveButton("Create", (dialog, id) -> {
+                    listener.onDialogPositiveClick(HyperlinkDialog.this, linkNameEditText.getText().toString(), linkUrlEditText.getText().toString());
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        System.out.println("Cancel pressed");
-//                        HyperlinkDialog.this.getDialog().cancel();
-                    }
-                });
+                .setNegativeButton("Cancel",
+                        (dialog, id) -> {
+                            System.out.println("Cancel pressed");
+                        }
+                );
         return builder.create();
-    }
-
-    // The activity that creates an instance of this dialog fragment must
-    // implement this interface to receive event callbacks. Each method passes
-    // the DialogFragment in case the host needs to query it.
-    public interface HyperlinkDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
-
-        public void onDialogNegativeClick(DialogFragment dialog);
     }
 
     // Override the Fragment.onAttach() method to instantiate the HyperlinkDialogListener.
