@@ -6,4 +6,8 @@
     <string name="pressed">Pressed:</string>
     <string name="personal_info">David Dada\ndada.d@northeastern.edu</string>
     <string name="link_item_text">link 1</string>
+    <string name="create_link_field_header_text">Enter the title and URL of a hyperlink below.</string>
+    <string name="create_link_field_header_text_edit">Edit the title or URL.</string>
+    <string name="create_link_field_title_text">Link Text</string>
+    <string name="create_link_field_url_text">Link Url</string>
 </resources>
