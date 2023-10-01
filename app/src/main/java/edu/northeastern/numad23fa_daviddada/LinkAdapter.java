@@ -1,5 +1,7 @@
 package edu.northeastern.numad23fa_daviddada;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,17 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 
 public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
 
     private final ArrayList<SimpleLink> simpleLinksData;
 
-    // Grabbing views from recycler view row layout. Similar to "OnCreate" Methods
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewTitle;
         private final TextView textViewUrl;
 
+        // Grabbing views from recycler view row layout. Similar to "OnCreate" Methods
         public ViewHolder(View view) {
             super(view);
             // grab views and store them
@@ -59,6 +63,24 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextViewTitle().setText(simpleLinksData.get(position).title);
         viewHolder.getTextViewUrl().setText(simpleLinksData.get(position).url);
+        View cardView = viewHolder.itemView;
+
+        // regular click listener
+        cardView.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(simpleLinksData.get(position).url));
+                v.getContext().startActivity(intent);
+
+            } catch (Exception e) {
+                Snackbar.make((View) cardView.getParent(), "Unable to Open URL; likely malformed", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        // long click listener
+        cardView.setOnLongClickListener(view -> {
+            System.out.println(">>>>>>>>>> Editing!");
+            return true;
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)

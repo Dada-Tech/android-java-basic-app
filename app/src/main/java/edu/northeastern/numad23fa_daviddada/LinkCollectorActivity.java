@@ -33,11 +33,11 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         // Temporary test data
-        simpleLinksModels.add(new SimpleLink("test 1", "google.com"));
-        simpleLinksModels.add(new SimpleLink("test 2", "facebook.com"));
-        simpleLinksModels.add(new SimpleLink("test 3", "daviddada.com"));
-        simpleLinksModels.add(new SimpleLink("test 4", "wydget.com"));
-        simpleLinksModels.add(new SimpleLink("test 5", "runescape.com"));
+        simpleLinksModels.add(new SimpleLink("test 1", "https://google.com"));
+        simpleLinksModels.add(new SimpleLink("test 2", "https://facebook.com"));
+        simpleLinksModels.add(new SimpleLink("test 3", "https://daviddada.com"));
+        simpleLinksModels.add(new SimpleLink("test 4", "https://wydget.com"));
+        simpleLinksModels.add(new SimpleLink("test 5", "https://runescape.com"));
 
         // SimpleLink Adapter
         simpleLinkAdapter = new LinkAdapter(simpleLinksModels);
@@ -63,6 +63,7 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
 
         simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
         Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
+        simpleLinkAdapter.notifyItemInserted(simpleLinksModels.size());
 
         snackbar.setAction("UNDO", (View v) -> {
             if (!simpleLinksModels.isEmpty()) {

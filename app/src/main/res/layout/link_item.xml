@@ -7,6 +7,8 @@
     android:layout_margin="10dp"
     app:contentPadding="10dp"
     app:cardElevation="5dp"
+    android:clickable="true"
+    android:longClickable="true"
     android:gravity="center">
 
     <LinearLayout
