@@ -1,6 +1,7 @@
 package edu.northeastern.numad23fa_daviddada;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 public class LinkCollectorActivity extends AppCompatActivity implements HyperlinkDialog.HyperlinkDialogListener {
 
     private final ArrayList<SimpleLink> simpleLinksModels = new ArrayList<>();
-    Snackbar snackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +29,6 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         LinkAdapter customAdapter = new LinkAdapter(simpleLinksModels);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Not Created", Snackbar.LENGTH_SHORT);
 
         // fab handle click using ImageButton or FloatingActionButton
         final ImageButton newHyperlinkButton = findViewById(R.id.new_hyperlink_url_button);
@@ -52,6 +50,16 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         }
 
         simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
-        Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT).show();
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
+        snackbar.setAction("UNDO", new UndoListener());
+        snackbar.show();
     }
+
+    public static class UndoListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            System.out.println("WILL UNDO");
+        }
+    }
+
 }
