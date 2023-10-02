@@ -55,12 +55,11 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
         this.simpleLinksData = dataSet;
     }
 
-    // Create new views (invoked by the layout manager).
     // This is where to inflate layout and giving the view to each of the items in the list
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
+        // new view for each UI list item
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.link_item, viewGroup, false);
 
@@ -98,7 +97,6 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     // Simple total items. Helps with binding process when updating the views
     @Override
     public int getItemCount() {

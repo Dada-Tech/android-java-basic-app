@@ -35,13 +35,6 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         // SimpleLink View
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
-        // Temporary test data
-        simpleLinksModels.add(new SimpleLink("test 1", "google.com"));
-        simpleLinksModels.add(new SimpleLink("test 2", "facebook.com"));
-        simpleLinksModels.add(new SimpleLink("test 3", "daviddada.com"));
-        simpleLinksModels.add(new SimpleLink("test 4", "http://wydget.ca"));
-        simpleLinksModels.add(new SimpleLink("test 5", "https://runescape.com"));
-
         // SimpleLink Adapter
         simpleLinkAdapter = new LinkAdapter(simpleLinksModels);
         recyclerView.setAdapter(simpleLinkAdapter);
@@ -53,6 +46,15 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         // Edit callback
         simpleLinkAdapter.setEditClickListener(position ->
                 showHyperlinkDialog(position, simpleLinksModels.get(position)));
+
+        // restore saved state if exists
+        if (savedInstanceState != null) {
+            ArrayList<SimpleLink> savedLinks = savedInstanceState.getParcelableArrayList("simpleLinksModels");
+            if (savedLinks != null) {
+                simpleLinksModels.clear();
+                simpleLinksModels.addAll(savedLinks);
+            }
+        }
     }
 
     public void showHyperlinkDialog(int position, SimpleLink link) {
@@ -126,10 +128,16 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
-
             simpleLinksModels.remove(position);
             simpleLinkAdapter.notifyItemRemoved(position);
         }
+    }
+
+    // Save only model, the rest can be recreated
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("simpleLinksModels", simpleLinksModels);
     }
 
 }

@@ -19,9 +19,6 @@ public class HyperlinkDialog extends DialogFragment {
     private final String dialogLinkUrl;
     HyperlinkDialogListener listener;
 
-    // The activity that creates an instance of this dialog fragment must
-    // implement this interface to receive event callbacks. Each method passes
-    // the DialogFragment in case the host needs to query it.
     public interface HyperlinkDialogListener {
         void onDialogPositiveClick(DialogFragment dialog, String linkTitle, String linkUrl);
     }
@@ -66,18 +63,15 @@ public class HyperlinkDialog extends DialogFragment {
         return builder.create();
     }
 
-    // Override the Fragment.onAttach() method to instantiate the HyperlinkDialogListener.
+    // instantiating the HyperlinkDialogListener
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        // Verify that the host activity implements the callback interface.
+        // ensure host activity implements the callback interface, or throw error
         try {
-            // Instantiate the HyperlinkDialogListener so you can send events to
-            // the host.
             listener = (HyperlinkDialogListener) context;
 
         } catch (ClassCastException e) {
-            // The activity doesn't implement the interface. Throw exception.
             throw new ClassCastException(String.format("%s must implement HyperlinkDialogListener", super.getActivity()));
         }
     }
