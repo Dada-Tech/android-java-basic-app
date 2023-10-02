@@ -30,6 +30,9 @@
         <activity
             android:name=".LinkCollectorActivity"
             android:exported="true" />
+        <activity
+            android:name=".PrimeDirectiveActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

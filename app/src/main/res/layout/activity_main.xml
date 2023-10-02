@@ -45,6 +45,13 @@
             android:layout_marginBottom="20dp"
             android:text="@string/link_collector_button_text" />
 
+        <Button
+            android:id="@+id/button_prime_directive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/prime_directive_button_text" />
+
     </LinearLayout>
 
 

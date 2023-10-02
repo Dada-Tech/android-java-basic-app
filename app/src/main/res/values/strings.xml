@@ -11,4 +11,5 @@
     <string name="create_link_field_title_text">Link Text</string>
     <string name="create_link_field_url_text">Link Url</string>
     <string name="create_a_link_button_text">create a link</string>
+    <string name="prime_directive_button_text">Prime Directive</string>
 </resources>
