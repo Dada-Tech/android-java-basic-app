@@ -10,4 +10,5 @@
     <string name="create_link_dialog_title_text_edit">Edit the title or URL.</string>
     <string name="create_link_field_title_text">Link Text</string>
     <string name="create_link_field_url_text">Link Url</string>
+    <string name="create_a_link_button_text">create a link</string>
 </resources>
