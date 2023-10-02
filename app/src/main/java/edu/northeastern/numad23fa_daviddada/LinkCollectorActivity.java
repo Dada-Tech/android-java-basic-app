@@ -20,6 +20,7 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
     private final ArrayList<SimpleLink> simpleLinksModels = new ArrayList<>();
     private LinkAdapter simpleLinkAdapter;
     private boolean isEditMode = false;
+    private int editingPos = -1;
 
 
     @Override
@@ -50,19 +51,20 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         new ItemTouchHelper(new SimpleLinkSwipeCallback()).attachToRecyclerView(recyclerView);
 
         // Edit callback
-        simpleLinkAdapter.setEditClickListener(position -> {
-            showHyperlinkDialog(simpleLinksModels.get(position));
-        });
+        simpleLinkAdapter.setEditClickListener(position ->
+                showHyperlinkDialog(position, simpleLinksModels.get(position)));
     }
 
-    public void showHyperlinkDialog(SimpleLink link) {
+    public void showHyperlinkDialog(int position, SimpleLink link) {
         isEditMode = true;
+        editingPos = position;
         DialogFragment dialog = new HyperlinkDialog(link);
         dialog.show(getSupportFragmentManager(), "hyperlink_dialog_tag");
     }
 
     public void showHyperlinkDialog() {
         isEditMode = false;
+        editingPos = -1;
         DialogFragment dialog = new HyperlinkDialog();
         dialog.show(getSupportFragmentManager(), "hyperlink_dialog_tag");
     }
@@ -84,12 +86,26 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
                     simpleLinksModels.remove(simpleLinksModels.size() - 1);
 
                     // notify adapter about change because it doesn't infer automatically
+                    // always at size cause you always add to the end. You are passing in pos
                     simpleLinkAdapter.notifyItemRemoved(simpleLinksModels.size());
                 }
             });
             snackbar.show();
         } else {
+            SimpleLink oldChange = simpleLinksModels.get(editingPos);
+            SimpleLink newChange = new SimpleLink(linkTitle, linkUrl);
 
+            simpleLinksModels.set(editingPos, newChange);
+            simpleLinkAdapter.notifyItemChanged(editingPos); // notify adaptor
+
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Edited", Snackbar.LENGTH_SHORT);
+
+            snackbar.setAction("UNDO", (View v) -> {
+                simpleLinksModels.set(editingPos, oldChange);
+                // notify adapter about change because it doesn't infer automatically on edits
+                simpleLinkAdapter.notifyItemChanged(editingPos);
+            });
+            snackbar.show();
         }
     }
 
