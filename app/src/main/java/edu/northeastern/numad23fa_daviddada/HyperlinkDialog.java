@@ -7,11 +7,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 public class HyperlinkDialog extends DialogFragment {
+
+    private final String dialogTitle;
+    private final String dialogLinkTitle;
+    private final String dialogLinkUrl;
+    HyperlinkDialogListener listener;
 
     // The activity that creates an instance of this dialog fragment must
     // implement this interface to receive event callbacks. Each method passes
@@ -20,27 +26,43 @@ public class HyperlinkDialog extends DialogFragment {
         void onDialogPositiveClick(DialogFragment dialog, String linkTitle, String linkUrl);
     }
 
-    // Use this instance of the interface to deliver action events.
-    HyperlinkDialogListener listener;
+    // overload for editing links
+    HyperlinkDialog(SimpleLink link) {
+        dialogTitle = "Edit";
+        dialogLinkTitle = link.title;
+        dialogLinkUrl = link.url;
+    }
+
+    // for new links
+    HyperlinkDialog() {
+        dialogTitle = "Create";
+        dialogLinkTitle = "";
+        dialogLinkUrl = "";
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Get the layout inflater.
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-        // Inflate the custom layout for the dialog.
+        // Inflate the custom layout for the dialog
         View dialogView = inflater.inflate(R.layout.create_link_dialog, null);
 
-        // dialog text fields
         EditText linkNameEditText = dialogView.findViewById(R.id.create_link_field_title);
         EditText linkUrlEditText = dialogView.findViewById(R.id.create_link_field_url);
+        TextView dialogTitleText = dialogView.findViewById(R.id.create_link_dialog_title);
 
-        // Inflate and set the layout for the dialog.
+        // set view based on dynamic properties
+        dialogTitleText.setText(dialogTitle);
+        linkNameEditText.setText(dialogLinkTitle);
+        linkUrlEditText.setText(dialogLinkUrl);
+
+        // Inflate and set the view and buttons
         builder.setView(dialogView)
                 .setPositiveButton("Create", (dialog, id) -> listener.onDialogPositiveClick(HyperlinkDialog.this, linkNameEditText.getText().toString(), linkUrlEditText.getText().toString()))
                 .setNegativeButton("Cancel", (dialog, id) -> System.out.println("Cancel pressed"));
+
         return builder.create();
     }
 

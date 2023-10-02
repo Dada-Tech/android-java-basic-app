@@ -13,13 +13,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/create_link_dialog_header"
+            android:id="@+id/create_link_dialog_title"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="30dp"
-            android:text="@string/create_link_field_header_text" />
+            android:text="@string/create_link_dialog_title_text" />
 
         <EditText
             android:id="@+id/create_link_field_title"

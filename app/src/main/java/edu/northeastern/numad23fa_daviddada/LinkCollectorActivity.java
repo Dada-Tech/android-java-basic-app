@@ -1,7 +1,6 @@
 package edu.northeastern.numad23fa_daviddada;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -20,6 +19,8 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
 
     private final ArrayList<SimpleLink> simpleLinksModels = new ArrayList<>();
     private LinkAdapter simpleLinkAdapter;
+    private boolean isEditMode = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +46,23 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         recyclerView.setAdapter(simpleLinkAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Touch Helper for swipes
         new ItemTouchHelper(new SimpleLinkSwipeCallback()).attachToRecyclerView(recyclerView);
+
+        // Edit callback
+        simpleLinkAdapter.setEditClickListener(position -> {
+            showHyperlinkDialog(simpleLinksModels.get(position));
+        });
+    }
+
+    public void showHyperlinkDialog(SimpleLink link) {
+        isEditMode = true;
+        DialogFragment dialog = new HyperlinkDialog(link);
+        dialog.show(getSupportFragmentManager(), "hyperlink_dialog_tag");
     }
 
     public void showHyperlinkDialog() {
-        // Create an instance of the dialog fragment and show it.
+        isEditMode = false;
         DialogFragment dialog = new HyperlinkDialog();
         dialog.show(getSupportFragmentManager(), "hyperlink_dialog_tag");
     }
@@ -58,22 +71,26 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String linkTitle, String linkUrl) {
         if (linkTitle.length() == 0 || linkUrl.length() == 0) {
-            Snackbar.make(findViewById(R.id.simple_link_layout), "Link Not Created", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(R.id.simple_link_layout), isEditMode ? "Cannot update fields to be blank" : "Link Not Created", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
-        simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
+        if (!isEditMode) {
+            simpleLinksModels.add(new SimpleLink(linkTitle, linkUrl));
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.simple_link_layout), "Link Created", Snackbar.LENGTH_SHORT);
 
-        snackbar.setAction("UNDO", (View v) -> {
-            if (!simpleLinksModels.isEmpty()) {
-                simpleLinksModels.remove(simpleLinksModels.size() - 1);
+            snackbar.setAction("UNDO", (View v) -> {
+                if (!simpleLinksModels.isEmpty()) {
+                    simpleLinksModels.remove(simpleLinksModels.size() - 1);
 
-                // notify adapter about change because it doesn't infer automatically
-                simpleLinkAdapter.notifyItemRemoved(simpleLinksModels.size());
-            }
-        });
-        snackbar.show();
+                    // notify adapter about change because it doesn't infer automatically
+                    simpleLinkAdapter.notifyItemRemoved(simpleLinksModels.size());
+                }
+            });
+            snackbar.show();
+        } else {
+
+        }
     }
 
     // Simple Link ItemTouchHelper
@@ -94,10 +111,8 @@ public class LinkCollectorActivity extends AppCompatActivity implements Hyperlin
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
 
-            Log.d("LinkActivity", "Before removal: " + simpleLinkAdapter.getItemCount());
             simpleLinksModels.remove(position);
             simpleLinkAdapter.notifyItemRemoved(position);
-            Log.d("LinkActivity", "After removal: " + simpleLinkAdapter.getItemCount());
         }
     }
 

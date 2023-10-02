@@ -17,6 +17,15 @@ import java.util.ArrayList;
 public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
 
     private final ArrayList<SimpleLink> simpleLinksData;
+    private EditClickListener editClickListener;
+
+    interface EditClickListener {
+        void onEditClick(int position);
+    }
+
+    public void setEditClickListener(EditClickListener listener) {
+        this.editClickListener = listener;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewTitle;
@@ -81,9 +90,10 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.ViewHolder> {
             }
         });
 
-        // long click listener
-        cardView.setOnLongClickListener(view -> {
-            System.out.println(">>>>>>>>>> Editing!");
+        // long click listener. Leveraging a custom callback so logic is implemented in the activity
+        cardView.setOnLongClickListener(v -> {
+            int updatedPosition = viewHolder.getAdapterPosition();
+            editClickListener.onEditClick(updatedPosition);
             return true;
         });
     }
