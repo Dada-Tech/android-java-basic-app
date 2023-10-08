@@ -73,7 +73,7 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
     class PrimeRunner implements Runnable {
         Handler handler;
 
-        private final int n_skips = 20000;
+        private final int n_skips;
 
         private int currentNumber;
         private int lastPrimeNumber;
@@ -81,6 +81,8 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
         PrimeRunner(Handler handler) {
             this.handler = handler;
             currentNumber = 3;
+            lastPrimeNumber = 3;
+            n_skips = 2000;
         }
 
         private boolean isPrime(int number) {
@@ -101,20 +103,11 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
                         lastPrimeNumber = currentNumber;
 
                         // last prime post in main handler
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                lastPrimeTextView.setText(getString(R.string.last_prime_text, "" + lastPrimeNumber));
-                            }
-                        });
+                        handler.post(() -> lastPrimeTextView.setText(getString(R.string.last_prime_text, "" + lastPrimeNumber)));
                     }
 
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            currentNumberTextView.setText(getString(R.string.current_number_prime_text, "" + currentNumber));
-                        }
-                    });
+                    // current number post in main handler
+                    handler.post(() -> currentNumberTextView.setText(getString(R.string.current_number_prime_text, "" + currentNumber)));
 
                     if (Thread.currentThread().isInterrupted()) {
                         Log.d(logTag, "Is Interrupted");
