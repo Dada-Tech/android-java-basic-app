@@ -35,15 +35,14 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:text="Terminate Search"
-                app:layout_constraintEnd_toStartOf="@id/prime_dir_pacifier_switch_button"
+                app:layout_constraintEnd_toStartOf="@id/prime_dir_pacifier_switch_checkbox"
                 app:layout_constraintStart_toEndOf="@id/prime_dir_find_primes_button"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/prime_dir_pacifier_switch_button"
+            <CheckBox
+                android:id="@+id/prime_dir_pacifier_switch_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
                 android:text="Pacifier Switch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/prime_dir_terminate_search_button"
@@ -52,23 +51,23 @@
 
 
         <TextView
-            android:id="@+id/prime_dir_current_number_text"
+            android:id="@+id/prime_dir_current_number_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="Current Number:"
+            android:text="@string/current_number_prime_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/prime_dir_terminate_search_button" />
 
         <TextView
-            android:id="@+id/prime_dir_last_prime_text"
+            android:id="@+id/prime_dir_last_prime_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last Prime:"
+            android:text="@string/last_prime_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/prime_dir_current_number_text" />
+            app:layout_constraintTop_toBottomOf="@id/prime_dir_current_number_text_view" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

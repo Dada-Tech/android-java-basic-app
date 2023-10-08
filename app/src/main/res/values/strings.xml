@@ -12,4 +12,6 @@
     <string name="create_link_field_url_text">Link Url</string>
     <string name="create_a_link_button_text">create a link</string>
     <string name="prime_directive_button_text">Prime Directive</string>
+    <string name="current_number_prime_text">Current Number: %1$s</string>
+    <string name="last_prime_text">Last Prime: %1$s</string>
 </resources>
