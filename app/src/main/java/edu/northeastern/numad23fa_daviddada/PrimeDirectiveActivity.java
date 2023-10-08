@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+// TODO: 1. continue the search through rotation using onSaveInstanceState().
+// TODO: 2. back button prompts user to verify termination only if searching. Closing the current activity should terminate/reset the search.
+
 public class PrimeDirectiveActivity extends AppCompatActivity {
     TextView currentNumberTextView;
     TextView lastPrimeTextView;
