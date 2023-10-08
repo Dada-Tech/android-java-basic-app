@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.apache.commons.math3.primes.Primes;
-
 public class PrimeDirectiveActivity extends AppCompatActivity {
     TextView currentNumberTextView;
     TextView lastPrimeTextView;
@@ -32,7 +30,7 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
         primeHandler = new Handler(Looper.getMainLooper());
 
         // Create and start a background thread
-        primeThread = new Thread(new PrimeRunner(primeHandler));
+        primeThread = new Thread(new PrimeRunner(this, primeHandler, currentNumberTextView, lastPrimeTextView));
 
         // current number text view
         currentNumberTextView = findViewById(R.id.prime_dir_current_number_text_view);
@@ -46,7 +44,7 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
         final Button findPrimesButton = findViewById(R.id.prime_dir_find_primes_button);
         findPrimesButton.setOnClickListener(v -> {
             if (!isThreadRunning) {
-                primeThread = new Thread(new PrimeRunner(primeHandler));
+                primeThread = new Thread(new PrimeRunner(this, primeHandler, currentNumberTextView, lastPrimeTextView));
                 primeThread.start();
                 isThreadRunning = true;
             } else {
@@ -68,53 +66,5 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
         // pacifier switch checkbox
         final CheckBox pacifierSwitchCheckbox = findViewById(R.id.prime_dir_pacifier_switch_checkbox);
         pacifierSwitchCheckbox.setOnClickListener(v -> pacifierSwitchCheckbox.setActivated(!pacifierSwitchCheckbox.isActivated()));
-    }
-
-    class PrimeRunner implements Runnable {
-        Handler handler;
-
-        private final int n_skips;
-
-        private int currentNumber;
-        private int lastPrimeNumber;
-
-        PrimeRunner(Handler handler) {
-            this.handler = handler;
-            currentNumber = 3;
-            lastPrimeNumber = 3;
-            n_skips = 2000;
-        }
-
-        private boolean isPrime(int number) {
-            return Primes.isPrime(number);
-        }
-
-        @Override
-        public void run() {
-            int skipCount = 0;
-
-            while (!Thread.currentThread().isInterrupted()) {
-                if (++skipCount % n_skips == 0) {
-                    skipCount = 0;
-                    currentNumber += 2;
-
-                    // if prime, update
-                    if (isPrime(currentNumber)) {
-                        lastPrimeNumber = currentNumber;
-
-                        // last prime post in main handler
-                        handler.post(() -> lastPrimeTextView.setText(getString(R.string.last_prime_text, "" + lastPrimeNumber)));
-                    }
-
-                    // current number post in main handler
-                    handler.post(() -> currentNumberTextView.setText(getString(R.string.current_number_prime_text, "" + currentNumber)));
-
-                    if (Thread.currentThread().isInterrupted()) {
-                        Log.d(logTag, "Is Interrupted");
-                        break;
-                    }
-                }
-            }
-        }
     }
 }
