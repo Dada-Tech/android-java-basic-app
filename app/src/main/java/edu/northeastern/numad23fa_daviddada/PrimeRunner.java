@@ -20,15 +20,25 @@ class PrimeRunner implements Runnable {
 
     private final Context context;
 
+    private PrimeDirectiveActivity mainActivity;
+
     PrimeRunner(Context context, Handler handler, TextView currentNumberView, TextView lastPrimeView) {
+        this(context, handler, currentNumberView, lastPrimeView, 3, 3);
+    }
+
+    PrimeRunner(Context context, Handler handler, TextView currentNumberView, TextView lastPrimeView, int currentNumber, int lastPrimeNumber) {
         this.handler = handler;
-        currentNumber = 3;
-        lastPrimeNumber = 3;
-        n_skips = 2000;
+        this.currentNumber = currentNumber;
+        this.lastPrimeNumber = lastPrimeNumber;
+        n_skips = 20000;
 
         this.currentNumberView = currentNumberView;
         this.lastPrimeView = lastPrimeView;
         this.context = context;
+
+        if (context instanceof PrimeDirectiveActivity) {
+            this.mainActivity = ((PrimeDirectiveActivity) context);
+        }
     }
 
     private boolean isPrime(int number) {
@@ -50,10 +60,12 @@ class PrimeRunner implements Runnable {
 
                     // last prime post in main handler
                     handler.post(() -> lastPrimeView.setText(context.getString(R.string.last_prime_text, "" + lastPrimeNumber)));
+                    mainActivity.updateLastPrimeNumber(lastPrimeNumber);
                 }
 
                 // current number post in main handler
                 handler.post(() -> currentNumberView.setText(context.getString(R.string.current_number_prime_text, "" + currentNumber)));
+                mainActivity.updateCurrentNumber(currentNumber);
 
                 if (Thread.currentThread().isInterrupted()) {
                     Log.d("PrimeRunner", "Is Interrupted");

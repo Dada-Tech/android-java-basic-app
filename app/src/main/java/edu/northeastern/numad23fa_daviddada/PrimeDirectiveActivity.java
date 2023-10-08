@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 // TODO: 1. continue the search through rotation using onSaveInstanceState().
@@ -23,13 +24,18 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
 
     String logTag = "--------- PrimeDirective ---------";
 
-    boolean isThreadRunning;
+    private boolean isThreadRunning;
+
+    private int currentNumber;
+
+    private int lastPrimeNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prime_directive);
 
+        // main handler. Could also use method & runOnUiThread
         primeHandler = new Handler(Looper.getMainLooper());
 
         // Create and start a background thread
@@ -69,5 +75,51 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
         // pacifier switch checkbox
         final CheckBox pacifierSwitchCheckbox = findViewById(R.id.prime_dir_pacifier_switch_checkbox);
         pacifierSwitchCheckbox.setOnClickListener(v -> pacifierSwitchCheckbox.setActivated(!pacifierSwitchCheckbox.isActivated()));
+
+        // restore saved state if exists
+        if (savedInstanceState != null) {
+            int currentNumber = savedInstanceState.getInt("currentNumber");
+            int lastPrimeNumber = savedInstanceState.getInt("lastPrimeNumber");
+            boolean isThreadRunning = savedInstanceState.getBoolean("isThreadRunning");
+
+            this.currentNumber = currentNumber;
+            this.lastPrimeNumber = lastPrimeNumber;
+            this.isThreadRunning = isThreadRunning;
+
+            // restore the text view
+            currentNumberTextView.setText(getString(R.string.current_number_prime_text, "" + currentNumber));
+            lastPrimeTextView.setText(getString(R.string.last_prime_text, "" + lastPrimeNumber));
+            Log.d(logTag, String.format("restoring values: curr: %d prim: %d %b",
+                    currentNumber, lastPrimeNumber, isThreadRunning));
+
+            // create new thread with saved valued
+            primeThread = new Thread(new PrimeRunner(this, primeHandler, currentNumberTextView, lastPrimeTextView, currentNumber, lastPrimeNumber));
+
+            // start thread if it was running before
+            if(isThreadRunning) {
+                primeThread.start();
+            }
+        }
+    }
+
+    // save: current number, last prime number, isThread running
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("currentNumber", currentNumber);
+        outState.putInt("lastPrimeNumber", lastPrimeNumber);
+        outState.putBoolean("isThreadRunning", isThreadRunning);
+
+        Log.d(logTag, String.format("saving values: curr: %d prim: %d %b",
+                currentNumber, lastPrimeNumber, isThreadRunning));
+    }
+
+    // for updating from the Thread class that was given this context (PrimeDir class)
+    public void updateCurrentNumber(int currentNumber) {
+        this.currentNumber = currentNumber;
+    }
+
+    public void updateLastPrimeNumber(int lastPrimeNumber) {
+        this.lastPrimeNumber = lastPrimeNumber;
     }
 }
