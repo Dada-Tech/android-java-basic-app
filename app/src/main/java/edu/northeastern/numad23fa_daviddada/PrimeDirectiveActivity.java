@@ -1,5 +1,6 @@
 package edu.northeastern.numad23fa_daviddada;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,10 +9,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-// TODO: 1. continue the search through rotation using onSaveInstanceState().
 // TODO: 2. back button prompts user to verify termination only if searching. Closing the current activity should terminate/reset the search.
 
 public class PrimeDirectiveActivity extends AppCompatActivity {
@@ -22,7 +24,7 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
 
     Handler primeHandler;
 
-    String logTag = "--------- PrimeDirective ---------";
+    String logTag = "--- Prime Directive ---";
 
     private boolean isThreadRunning;
 
@@ -96,10 +98,29 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
             primeThread = new Thread(new PrimeRunner(this, primeHandler, currentNumberTextView, lastPrimeTextView, currentNumber, lastPrimeNumber));
 
             // start thread if it was running before
-            if(isThreadRunning) {
+            if (isThreadRunning) {
                 primeThread.start();
             }
         }
+
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PrimeDirectiveActivity.this);
+                builder.setMessage("Search is still running.\nStill Exit?");
+
+                builder.setPositiveButton("Exit", (dialog, which) -> {
+                    finish(); // exit
+                });
+                builder.setNegativeButton("Dismiss", (dialog, which) -> {
+                    dialog.dismiss(); // close
+                });
+                builder.show();
+            }
+        };
+
+        OnBackPressedDispatcher onBackPressedDispatcher = getOnBackPressedDispatcher();
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback);
     }
 
     // save: current number, last prime number, isThread running
