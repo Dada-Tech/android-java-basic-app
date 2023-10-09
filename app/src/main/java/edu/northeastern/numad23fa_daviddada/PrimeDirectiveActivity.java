@@ -14,8 +14,6 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-// TODO: 2. back button prompts user to verify termination only if searching. Closing the current activity should terminate/reset the search.
-
 public class PrimeDirectiveActivity extends AppCompatActivity {
     TextView currentNumberTextView;
     TextView lastPrimeTextView;
@@ -103,9 +101,15 @@ public class PrimeDirectiveActivity extends AppCompatActivity {
             }
         }
 
+
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (!isThreadRunning) {
+                    finish();
+                    return;
+                }
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(PrimeDirectiveActivity.this);
                 builder.setMessage("Search is still running.\nStill Exit?");
 
