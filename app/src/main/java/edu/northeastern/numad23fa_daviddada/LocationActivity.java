@@ -21,7 +21,7 @@ public class LocationActivity extends AppCompatActivity {
 
     Handler locationHandler;
 
-    String logTag = "--- Location Directive ---";
+    String logTag = "@@Location Activity";
 
     private boolean isThreadRunning;
 
@@ -41,28 +41,28 @@ public class LocationActivity extends AppCompatActivity {
         locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView));
 
         // current number text view
-        currentNumberTextView = findViewById(R.id.location_dir_current_number_text_view);
-        currentNumberTextView.setText(getString(R.string.current_location_text, " "));
+        currentNumberTextView = findViewById(R.id.current_location_text_view);
+        currentNumberTextView.setText(getString(R.string.current_location_text, 0, 0));
 
         // last location text view
-        lastLocationTextView = findViewById(R.id.location_dir_last_location_text_view);
-        lastLocationTextView.setText(getString(R.string.last_location_text, " "));
+        lastLocationTextView = findViewById(R.id.total_distance_travelled_text_view);
+        lastLocationTextView.setText(getString(R.string.total_distance_travelled, 0));
 
         // find locations button
-        final Button findLocationsButton = findViewById(R.id.location_dir_find_locations_button);
-        findLocationsButton.setOnClickListener(v -> {
-            if (!isThreadRunning) {
-                locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView));
-                locationThread.start();
-                isThreadRunning = true;
-            } else {
-                Log.d(logTag, "ALREADY RUNNING!");
-            }
-        });
+//        final Button findLocationsButton = findViewById(R.id.location_dir_find_locations_button);
+//        findLocationsButton.setOnClickListener(v -> {
+//            if (!isThreadRunning) {
+//                locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView));
+//                locationThread.start();
+//                isThreadRunning = true;
+//            } else {
+//                Log.d(logTag, "ALREADY RUNNING!");
+//            }
+//        });
 
-        // terminate search button
-        final Button terminateSearchButton = findViewById(R.id.location_dir_terminate_search_button);
-        terminateSearchButton.setOnClickListener(v -> {
+        // reset total distance
+        final Button resetTotalDistanceButton = findViewById(R.id.location_reset_total_distance_button);
+        resetTotalDistanceButton.setOnClickListener(v -> {
             if (isThreadRunning) {
                 locationThread.interrupt();
                 isThreadRunning = false;
@@ -82,8 +82,8 @@ public class LocationActivity extends AppCompatActivity {
             this.isThreadRunning = isThreadRunning;
 
             // restore the text view
-            currentNumberTextView.setText(getString(R.string.current_location_text, "" + currentNumber));
-            lastLocationTextView.setText(getString(R.string.last_location_text, "" + lastLocationNumber));
+            currentNumberTextView.setText(getString(R.string.current_location_text, currentNumber, currentNumber));
+            lastLocationTextView.setText(getString(R.string.total_distance_travelled, lastLocationNumber));
             Log.d(logTag, String.format("restoring values: curr: %d prim: %d %b",
                     currentNumber, lastLocationNumber, isThreadRunning));
 
