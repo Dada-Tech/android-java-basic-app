@@ -33,6 +33,9 @@
         <activity
             android:name=".PrimeDirectiveActivity"
             android:exported="true" />
+        <activity
+            android:name=".LocationActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

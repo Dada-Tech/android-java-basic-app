@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
         linkCollectorButton.setOnClickListener(v -> startActivity(new Intent(this, LinkCollectorActivity.class)));
 
         findViewById(R.id.button_prime_directive).setOnClickListener(v -> startActivity(new Intent(this, PrimeDirectiveActivity.class)));
+
+        findViewById(R.id.button_location_activity).setOnClickListener(v -> startActivity(new Intent(this, LocationActivity.class)));
     }
 
 }

@@ -52,6 +52,13 @@
             android:layout_marginBottom="20dp"
             android:text="@string/prime_directive_button_text" />
 
+        <Button
+            android:id="@+id/button_location_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/location_activity_button_text" />
+
     </LinearLayout>
 
 
