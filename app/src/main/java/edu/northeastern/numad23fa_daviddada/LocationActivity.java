@@ -1,17 +1,29 @@
 package edu.northeastern.numad23fa_daviddada;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class LocationActivity extends AppCompatActivity {
     TextView currentNumberTextView;
@@ -21,7 +33,7 @@ public class LocationActivity extends AppCompatActivity {
 
     Handler locationHandler;
 
-    String logTag = "@@Location Activity";
+    String logTag = "@@LocationActivity";
 
     private boolean isThreadRunning;
 
@@ -33,6 +45,13 @@ public class LocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+
+        View locationView = findViewById(R.id.location_view);
+
+        // broadcast receive location-update intents
+        LocationBroadCastReceiver locationBroadCastReceiver = new LocationBroadCastReceiver();
+        ContextCompat.registerReceiver(this, locationBroadCastReceiver, new IntentFilter("location-changed"), ContextCompat.RECEIVER_NOT_EXPORTED);
+        ContextCompat.registerReceiver(this, locationUpdateReceiver, new IntentFilter("location-changed"), ContextCompat.RECEIVER_NOT_EXPORTED);
 
         // main handler. Could also use method & runOnUiThread
         locationHandler = new Handler(Looper.getMainLooper());
@@ -48,17 +67,37 @@ public class LocationActivity extends AppCompatActivity {
         lastLocationTextView = findViewById(R.id.total_distance_travelled_text_view);
         lastLocationTextView.setText(getString(R.string.total_distance_travelled, 0));
 
-        // find locations button
-//        final Button findLocationsButton = findViewById(R.id.location_dir_find_locations_button);
-//        findLocationsButton.setOnClickListener(v -> {
-//            if (!isThreadRunning) {
-//                locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView));
-//                locationThread.start();
-//                isThreadRunning = true;
-//            } else {
-//                Log.d(logTag, "ALREADY RUNNING!");
-//            }
-//        });
+        // Location Request Definition
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts
+                                .RequestMultiplePermissions(), result -> {
+
+                            // define permission
+                            Boolean fineLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            Boolean coarseLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                            // if either is allowed
+                            if ((fineLocationGranted != null && fineLocationGranted) || (coarseLocationGranted != null && coarseLocationGranted)) {
+                                Snackbar.make(locationView, "Location service granted", Snackbar.LENGTH_SHORT).show();
+                                Log.d(logTag, "location services started from activity");
+
+                                // Start LocationService using Intent
+                                Intent serviceIntent = new Intent(this, LocationService.class);
+                                startService(serviceIntent); // start service
+                            } else {
+                                Snackbar.make(locationView, "Location service is required!", Snackbar.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+
+        // location request call
+        locationPermissionRequest.launch(new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
+
 
         // reset total distance
         final Button resetTotalDistanceButton = findViewById(R.id.location_reset_total_distance_button);
@@ -122,6 +161,15 @@ public class LocationActivity extends AppCompatActivity {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // broadcast receiver unregister
+        Log.d(logTag, "destroying ref to location receiver");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(locationUpdateReceiver);
+    }
+
     // save: current number, last location number, isThread running
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -142,4 +190,18 @@ public class LocationActivity extends AppCompatActivity {
     public void updateLastLocationNumber(int lastLocationNumber) {
         this.lastLocationNumber = lastLocationNumber;
     }
+
+    private final BroadcastReceiver locationUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(logTag, "LOCATION RECEIVED");
+            if ("location-update".equals(intent.getAction())) {
+                double latitude = intent.getDoubleExtra("latitude", 0.0);
+                double longitude = intent.getDoubleExtra("longitude", 0.0);
+                Log.d(logTag, String.format("LOCATION RECEIVED:\n%s\n%s", latitude, longitude));
+            } else {
+                Log.d(logTag, "ignored Intent:" + intent.getAction());
+            }
+        }
+    };
 }
