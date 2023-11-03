@@ -22,8 +22,12 @@ public class LocationService extends Service implements LocationListener {
     private LocationUpdateCallback locationUpdateCallback;
     private final IBinder binder = new LocalBinder();
 
+    private double lastLatitude = 0;
+    private double lastLongitude = 0;
+    private double lastTotalDistance = 0;
+
     public interface LocationUpdateCallback {
-        void onLocationUpdate(double latitude, double longitude);
+        void onLocationUpdate(double latitude, double longitude, double totalDistance);
     }
 
     public class LocalBinder extends Binder {
@@ -45,7 +49,7 @@ public class LocationService extends Service implements LocationListener {
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, this);
     }
 
     @Override
@@ -70,18 +74,29 @@ public class LocationService extends Service implements LocationListener {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
+        if (lastLongitude == 0) {
+            lastLatitude = latitude;
+            lastLongitude = longitude;
+        }
+
+        lastTotalDistance = lastTotalDistance + distance(lastLatitude, latitude, lastLongitude, longitude, 1, 1);
+        lastLatitude = latitude;
+        lastLongitude = longitude;
+
+
         // Broadcast location
         Intent intent = new Intent();
         intent.setAction("location-update");
         intent.setPackage("edu.northeastern.numad23fa_daviddada");
         intent.putExtra("latitude", latitude);
         intent.putExtra("longitude", longitude);
+        intent.putExtra("totalDistance", lastTotalDistance);
         sendBroadcast(intent);
-        Log.d(logTag, String.format("location changed %s %s", latitude, longitude));
+//        Log.d(logTag, String.format("location changed %s %s", latitude, longitude));
 
         this.sendBroadcast(intent);
         if (locationUpdateCallback != null) {
-            locationUpdateCallback.onLocationUpdate(latitude, longitude);
+            locationUpdateCallback.onLocationUpdate(latitude, longitude, lastTotalDistance);
         } else {
             Log.d(logTag, "callback null!");
         }
@@ -115,5 +130,37 @@ public class LocationService extends Service implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
     }
+
+    /**
+     * Reference: <a href="https://stackoverflow.com/questions/3694380/calculating-distance-between-two-points-using-latitude-longitude/16794680#16794680">...</a>
+     * Calculate distance between two points in latitude and longitude taking
+     * into account height difference. If you are not interested in height
+     * difference pass 0.0. Uses Haversine method as its base.
+     * <p>
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     *
+     * @returns Distance in Meters
+     */
+    public static double distance(double lat1, double lat2, double lon1,
+                                  double lon2, double el1, double el2) {
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
+    }
+
 }
 

@@ -13,11 +13,18 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/current_location_text_view"
+            android:id="@+id/latitude_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="@string/current_location_text" />
+            android:text="@string/latitude" />
+
+        <TextView
+            android:id="@+id/longitude_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/longitude" />
 
         <TextView
             android:id="@+id/total_distance_travelled_text_view"
@@ -31,6 +38,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/reset_total_distance_button_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"
+            android:text="@string/location_view_instructions" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

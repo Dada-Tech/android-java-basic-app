@@ -57,13 +57,13 @@ class LocationRunner implements Runnable {
                     lastLocationNumber = currentNumber;
 
                     // last location post in main handler
-                    handler.post(() -> lastLocationView.setText(context.getString(R.string.total_distance_travelled, lastLocationNumber)));
-                    mainActivity.updateLastLocationNumber(lastLocationNumber);
+                    handler.post(() -> lastLocationView.setText(context.getString(R.string.total_distance_travelled, "" + lastLocationNumber)));
+                    mainActivity.updateLatitude(lastLocationNumber);
                 }
 
                 // current number post in main handler
-                handler.post(() -> currentNumberView.setText(context.getString(R.string.current_location_text, currentNumber, currentNumber)));
-                mainActivity.updateCurrentNumber(currentNumber);
+                handler.post(() -> currentNumberView.setText(context.getString(R.string.latitude, "" + currentNumber)));
+                mainActivity.updateLongitude(currentNumber);
 
                 if (Thread.currentThread().isInterrupted()) {
                     Log.d("LocationRunner", "Is Interrupted");

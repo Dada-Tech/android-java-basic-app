@@ -14,9 +14,11 @@
     <string name="prime_directive_button_text">Prime Directive</string>
     <string name="current_number_prime_text">Current Number: %1$s</string>
     <string name="last_prime_text">Last Prime: %1$s</string>
-    <string name="current_location_text">Latitude: %1$d, Longitude: %2$d</string>
-    <string name="total_distance_travelled">Total Distance Travelled: %1$d</string>
+    <string name="latitude">Latitude: %1$s</string>
+    <string name="longitude">Longitude: %1$s</string>
+    <string name="total_distance_travelled">Total Distance Travelled: %1$s</string>
     <string name="location_activity_button_text">Location</string>
     <string name="find_locations_button_text">Find Locations</string>
     <string name="reset_total_distance_button_text">Reset Total Distance</string>
+    <string name="location_view_instructions">May take up to 15 seconds as location initializes…</string>
 </resources>

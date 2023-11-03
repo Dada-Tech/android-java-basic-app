@@ -29,8 +29,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.snackbar.Snackbar;
 
 public class LocationActivity extends AppCompatActivity implements LocationService.LocationUpdateCallback {
-    TextView currentNumberTextView;
-    TextView lastLocationTextView;
+    TextView latitudeTextView;
+    TextView longitudeTextView;
+    TextView totalDistanceTextView;
 
     Thread locationThread;
 
@@ -40,9 +41,11 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
 
     private boolean isThreadRunning;
 
-    private int currentNumber;
+    private int longitude;
 
-    private int lastLocationNumber;
+    private int latitude;
+
+    private int totalDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +63,18 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
         locationHandler = new Handler(Looper.getMainLooper());
 
         // Create and start a background thread
-        locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView));
+        // locationThread = new Thread(new LocationRunner(this, locationHandler, latitudeTextView, longitudeTextView));
 
         // current number text view
-        currentNumberTextView = findViewById(R.id.current_location_text_view);
-        currentNumberTextView.setText(getString(R.string.current_location_text, 0, 0));
+        latitudeTextView = findViewById(R.id.latitude_text_view);
+        latitudeTextView.setText(getString(R.string.latitude, "" + 0));
+
+        longitudeTextView = findViewById(R.id.longitude_text_view);
+        longitudeTextView.setText(getString(R.string.longitude, "" + 0));
 
         // last location text view
-        lastLocationTextView = findViewById(R.id.total_distance_travelled_text_view);
-        lastLocationTextView.setText(getString(R.string.total_distance_travelled, 0));
+        totalDistanceTextView = findViewById(R.id.total_distance_travelled_text_view);
+        totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + 0));
 
         // Location Request Definition
         ActivityResultLauncher<String[]> locationPermissionRequest =
@@ -117,22 +123,26 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
 
         // restore saved state if exists
         if (savedInstanceState != null) {
-            int currentNumber = savedInstanceState.getInt("currentNumber");
-            int lastLocationNumber = savedInstanceState.getInt("lastLocationNumber");
+            int longitude = savedInstanceState.getInt("longitude");
+            int latitude = savedInstanceState.getInt("latitude");
+            int totalDistance = savedInstanceState.getInt("totalDistance");
             boolean isThreadRunning = savedInstanceState.getBoolean("isThreadRunning");
 
-            this.currentNumber = currentNumber;
-            this.lastLocationNumber = lastLocationNumber;
+            this.longitude = longitude;
+            this.latitude = latitude;
+            this.totalDistance = totalDistance;
             this.isThreadRunning = isThreadRunning;
 
             // restore the text view
-            currentNumberTextView.setText(getString(R.string.current_location_text, currentNumber, currentNumber));
-            lastLocationTextView.setText(getString(R.string.total_distance_travelled, lastLocationNumber));
-            Log.d(logTag, String.format("restoring values: curr: %d prim: %d %b",
-                    currentNumber, lastLocationNumber, isThreadRunning));
+            latitudeTextView.setText(getString(R.string.latitude, "" + latitude));
+            longitudeTextView.setText(getString(R.string.longitude, "" + latitude));
+            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + latitude));
+
+            Log.d(logTag, String.format("restoring values: long: %d, lat: %d, tot: %d, isRun: %b",
+                    longitude, latitude, totalDistance, isThreadRunning));
 
             // create new thread with saved valued
-            locationThread = new Thread(new LocationRunner(this, locationHandler, currentNumberTextView, lastLocationTextView, currentNumber, lastLocationNumber));
+            locationThread = new Thread(new LocationRunner(this, locationHandler, latitudeTextView, longitudeTextView, longitude, latitude));
 
             // start thread if it was running before
             if (isThreadRunning) {
@@ -140,15 +150,9 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
             }
         }
 
-
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (!isThreadRunning) {
-                    finish();
-                    return;
-                }
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
                 builder.setMessage("Search is still running.\nStill Exit?");
 
@@ -194,23 +198,36 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("currentNumber", currentNumber);
-        outState.putInt("lastLocationNumber", lastLocationNumber);
+        outState.putInt("longitude", longitude);
+        outState.putInt("latitude", latitude);
+        outState.putInt("totalDistance", totalDistance);
         outState.putBoolean("isThreadRunning", isThreadRunning);
 
-        Log.d(logTag, String.format("saving values: curr: %d prim: %d %b",
-                currentNumber, lastLocationNumber, isThreadRunning));
+        Log.d(logTag, String.format("saving values: long: %d, lat: %d, tot: %d, isThread: %b",
+                longitude, latitude, totalDistance, isThreadRunning));
     }
 
     // for updating from the Thread class that was given this context (LocationDir class)
-    public void updateCurrentNumber(int currentNumber) {
-        this.currentNumber = currentNumber;
+    public void updateLongitude(int longitude) {
+        this.longitude = longitude;
     }
 
-    public void updateLastLocationNumber(int lastLocationNumber) {
-        this.lastLocationNumber = lastLocationNumber;
+    public void updateLatitude(int latitude) {
+        this.latitude = latitude;
     }
 
+    public void updateTotalDistance(int totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
+    @Override
+    public void onLocationUpdate(double latitude, double longitude, double totalDistance) {
+        longitudeTextView.setText(getString(R.string.longitude, "" + longitude));
+        latitudeTextView.setText(getString(R.string.latitude, "" + latitude));
+        totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + totalDistance));
+    }
+
+    // doesn't work
     private final BroadcastReceiver locationUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -224,9 +241,4 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
             }
         }
     };
-
-    @Override
-    public void onLocationUpdate(double latitude, double longitude) {
-        Log.d(logTag, String.format("Callback:\n%s\n%s", latitude, longitude));
-    }
 }
