@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -16,9 +17,22 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.List;
 
-public class LocationService extends Service implements LocationListener {
 
-    private String logTag = "@@LocationService";
+public class LocationService extends Service implements LocationListener {
+    private LocationUpdateCallback locationUpdateCallback;
+    private final IBinder binder = new LocalBinder();
+
+    public interface LocationUpdateCallback {
+        void onLocationUpdate(double latitude, double longitude);
+    }
+
+    public class LocalBinder extends Binder {
+        LocationService getService() {
+            return LocationService.this;
+        }
+    }
+
+    private final String logTag = "@@LocationService";
 
     @Override
     public void onCreate() {
@@ -47,8 +61,9 @@ public class LocationService extends Service implements LocationListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
+
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
@@ -65,6 +80,15 @@ public class LocationService extends Service implements LocationListener {
         Log.d(logTag, String.format("location changed %s %s", latitude, longitude));
 
         this.sendBroadcast(intent);
+        if (locationUpdateCallback != null) {
+            locationUpdateCallback.onLocationUpdate(latitude, longitude);
+        } else {
+            Log.d(logTag, "callback null!");
+        }
+    }
+
+    public void setLocationUpdateCallback(LocationUpdateCallback callback) {
+        this.locationUpdateCallback = callback;
     }
 
     @Override

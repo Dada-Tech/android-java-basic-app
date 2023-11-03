@@ -3,11 +3,14 @@ package edu.northeastern.numad23fa_daviddada;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +28,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public class LocationActivity extends AppCompatActivity {
+public class LocationActivity extends AppCompatActivity implements LocationService.LocationUpdateCallback {
     TextView currentNumberTextView;
     TextView lastLocationTextView;
 
@@ -85,7 +88,9 @@ public class LocationActivity extends AppCompatActivity {
 
                                 // Start LocationService using Intent
                                 Intent serviceIntent = new Intent(this, LocationService.class);
-                                startService(serviceIntent); // start service
+                                startService(serviceIntent);
+                                bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
                             } else {
                                 Snackbar.make(locationView, "Location service is required!", Snackbar.LENGTH_SHORT).show();
                             }
@@ -161,6 +166,21 @@ public class LocationActivity extends AppCompatActivity {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback);
     }
 
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            // The service is connected, and you can access its methods.
+            LocationService.LocalBinder localBinder = (LocationService.LocalBinder) binder;
+            LocationService locationService = localBinder.getService();
+            locationService.setLocationUpdateCallback(LocationActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // The service is disconnected, you can perform cleanup here.
+        }
+    };
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -204,4 +224,9 @@ public class LocationActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public void onLocationUpdate(double latitude, double longitude) {
+        Log.d(logTag, String.format("Callback:\n%s\n%s", latitude, longitude));
+    }
 }
