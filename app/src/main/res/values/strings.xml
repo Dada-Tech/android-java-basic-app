@@ -20,5 +20,5 @@
     <string name="location_activity_button_text">Location</string>
     <string name="find_locations_button_text">Find Locations</string>
     <string name="reset_total_distance_button_text">Reset Total Distance</string>
-    <string name="location_view_instructions">May take up to 15 seconds as location initializes…</string>
+    <string name="location_view_instructions">Please start walking around. Location calculations are initializing…</string>
 </resources>

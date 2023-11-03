@@ -33,21 +33,15 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
     TextView longitudeTextView;
     TextView totalDistanceTextView;
 
-    Thread locationThread;
-
     Handler locationHandler;
 
     String logTag = "@@LocationActivity";
 
     private boolean isThreadRunning;
 
-    private int longitude;
-
-    private int latitude;
-
-    private int totalDistance;
-
-
+    private double longitude;
+    private double latitude;
+    private double totalDistance;
     private double lastLatitude;
     private double lastLongitude;
     private double lastTotalDistance;
@@ -61,6 +55,10 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
         this.lastTotalDistance = 0;
         this.lastLatitude = 0;
         this.lastLongitude = 0;
+
+        this.longitude = 0;
+        this.latitude = 0;
+        this.totalDistance = 0;
 
         // broadcast receive location-update intents
         LocationBroadCastReceiver locationBroadCastReceiver = new LocationBroadCastReceiver();
@@ -117,54 +115,43 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
-
         // reset total distance
         final Button resetTotalDistanceButton = findViewById(R.id.location_reset_total_distance_button);
         resetTotalDistanceButton.setOnClickListener(v -> {
             this.totalDistance = 0;
             this.lastTotalDistance = 0;
             totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + 0));
-//            if (isThreadRunning) {
-//                locationThread.interrupt();
-//                isThreadRunning = false;
-//            } else {
-//                Log.d(logTag, "tried to interrupt on dead thread");
-//            }
         });
 
         // restore saved state if exists
         if (savedInstanceState != null) {
-            int longitude = savedInstanceState.getInt("longitude");
-            int latitude = savedInstanceState.getInt("latitude");
-            int totalDistance = savedInstanceState.getInt("totalDistance");
-            int lastLongitude = savedInstanceState.getInt("longitude");
-            int lastLatitude = savedInstanceState.getInt("latitude");
-            int lastTotalDistance = savedInstanceState.getInt("totalDistance");
+            double longitude = savedInstanceState.getDouble("longitude");
+            double latitude = savedInstanceState.getDouble("latitude");
+            double totalDistance = savedInstanceState.getDouble("totalDistance");
+
+            double lastLongitude = savedInstanceState.getDouble("lastLongitude");
+            double lastLatitude = savedInstanceState.getDouble("lastLatitude");
+            double lastTotalDistance = savedInstanceState.getDouble("lastTotalDistance");
+
             boolean isThreadRunning = savedInstanceState.getBoolean("isThreadRunning");
 
-            this.lastTotalDistance = lastTotalDistance;
-            this.lastLatitude = lastLatitude;
-            this.lastLongitude = lastLongitude;
             this.longitude = longitude;
             this.latitude = latitude;
             this.totalDistance = totalDistance;
+
+            this.lastLongitude = lastLongitude;
+            this.lastLatitude = lastLatitude;
+            this.lastTotalDistance = lastTotalDistance;
+
             this.isThreadRunning = isThreadRunning;
 
             // restore the text view
             latitudeTextView.setText(getString(R.string.latitude, "" + latitude));
             longitudeTextView.setText(getString(R.string.longitude, "" + longitude));
-            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + totalDistance));
+            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + this.totalDistance));
 
-            Log.d(logTag, String.format("restoring values: long: %d, lat: %d, tot: %d, isRun: %b",
-                    longitude, latitude, totalDistance, isThreadRunning));
-
-            // create new thread with saved valued
-            locationThread = new Thread(new LocationRunner(this, locationHandler, latitudeTextView, longitudeTextView, longitude, latitude));
-
-            // start thread if it was running before
-            if (isThreadRunning) {
-                locationThread.start();
-            }
+            Log.d(logTag, String.format("restoring values: long: %.2f, lat: %.2f, tot: %.2f, last_tot: %.2f, isRun: %b",
+                    longitude, latitude, totalDistance, lastTotalDistance, isThreadRunning));
         }
 
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
@@ -225,22 +212,9 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
 
         outState.putBoolean("isThreadRunning", isThreadRunning);
 
-        Log.d(logTag, String.format("saving values: long: %d, lat: %d, tot: %d, isThread: %b",
-                longitude, latitude, totalDistance, isThreadRunning));
+        Log.d(logTag, String.format("saving values: long: %.2f, lat: %.2f, tot: %.2f, last_tot: %.2f, isThread: %b",
+                longitude, latitude, totalDistance, lastTotalDistance, isThreadRunning));
     }
-
-    // for updating from the Thread class that was given this context (LocationDir class)
-    public void updateLongitude(int longitude) {
-        this.longitude = longitude;
-    }
-
-    public void updateLatitude(int latitude) {
-        this.latitude = latitude;
-    }
-
-//    public void updateTotalDistance(int totalDistance) {
-//        this.totalDistance = totalDistance;
-//    }
 
     @Override
     public void onLocationUpdate(double latitude, double longitude) {
@@ -251,9 +225,13 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
             lastLongitude = longitude;
         }
 
-        lastTotalDistance = lastTotalDistance + distance(lastLatitude, latitude, lastLongitude, longitude, 1, 1);
-        lastLatitude = latitude;
-        lastLongitude = longitude;
+        this.lastTotalDistance = lastTotalDistance + distance(lastLatitude, latitude, lastLongitude, longitude, 1, 1);
+        this.lastLatitude = latitude;
+        this.lastLongitude = longitude;
+
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.totalDistance = lastTotalDistance;
 
         // set of result
         longitudeTextView.setText(getString(R.string.longitude, "" + longitude));
