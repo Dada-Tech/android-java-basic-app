@@ -47,12 +47,20 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
 
     private int totalDistance;
 
+
+    private double lastLatitude;
+    private double lastLongitude;
+    private double lastTotalDistance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-
         View locationView = findViewById(R.id.location_view);
+
+        this.lastTotalDistance = 0;
+        this.lastLatitude = 0;
+        this.lastLongitude = 0;
 
         // broadcast receive location-update intents
         LocationBroadCastReceiver locationBroadCastReceiver = new LocationBroadCastReceiver();
@@ -113,12 +121,15 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
         // reset total distance
         final Button resetTotalDistanceButton = findViewById(R.id.location_reset_total_distance_button);
         resetTotalDistanceButton.setOnClickListener(v -> {
-            if (isThreadRunning) {
-                locationThread.interrupt();
-                isThreadRunning = false;
-            } else {
-                Log.d(logTag, "tried to interrupt on dead thread");
-            }
+            this.totalDistance = 0;
+            this.lastTotalDistance = 0;
+            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + 0));
+//            if (isThreadRunning) {
+//                locationThread.interrupt();
+//                isThreadRunning = false;
+//            } else {
+//                Log.d(logTag, "tried to interrupt on dead thread");
+//            }
         });
 
         // restore saved state if exists
@@ -126,8 +137,14 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
             int longitude = savedInstanceState.getInt("longitude");
             int latitude = savedInstanceState.getInt("latitude");
             int totalDistance = savedInstanceState.getInt("totalDistance");
+            int lastLongitude = savedInstanceState.getInt("longitude");
+            int lastLatitude = savedInstanceState.getInt("latitude");
+            int lastTotalDistance = savedInstanceState.getInt("totalDistance");
             boolean isThreadRunning = savedInstanceState.getBoolean("isThreadRunning");
 
+            this.lastTotalDistance = lastTotalDistance;
+            this.lastLatitude = lastLatitude;
+            this.lastLongitude = lastLongitude;
             this.longitude = longitude;
             this.latitude = latitude;
             this.totalDistance = totalDistance;
@@ -135,8 +152,8 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
 
             // restore the text view
             latitudeTextView.setText(getString(R.string.latitude, "" + latitude));
-            longitudeTextView.setText(getString(R.string.longitude, "" + latitude));
-            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + latitude));
+            longitudeTextView.setText(getString(R.string.longitude, "" + longitude));
+            totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + totalDistance));
 
             Log.d(logTag, String.format("restoring values: long: %d, lat: %d, tot: %d, isRun: %b",
                     longitude, latitude, totalDistance, isThreadRunning));
@@ -154,7 +171,7 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
             @Override
             public void handleOnBackPressed() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
-                builder.setMessage("Search is still running.\nStill Exit?");
+                builder.setMessage("Are you sure you want to Exit?");
 
                 builder.setPositiveButton("Exit", (dialog, which) -> {
                     finish(); // exit
@@ -198,9 +215,14 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("longitude", longitude);
-        outState.putInt("latitude", latitude);
-        outState.putInt("totalDistance", totalDistance);
+        outState.putDouble("longitude", longitude);
+        outState.putDouble("latitude", latitude);
+        outState.putDouble("totalDistance", totalDistance);
+
+        outState.putDouble("lastLongitude", lastLongitude);
+        outState.putDouble("lastLatitude", lastLatitude);
+        outState.putDouble("lastTotalDistance", lastTotalDistance);
+
         outState.putBoolean("isThreadRunning", isThreadRunning);
 
         Log.d(logTag, String.format("saving values: long: %d, lat: %d, tot: %d, isThread: %b",
@@ -216,15 +238,58 @@ public class LocationActivity extends AppCompatActivity implements LocationServi
         this.latitude = latitude;
     }
 
-    public void updateTotalDistance(int totalDistance) {
-        this.totalDistance = totalDistance;
-    }
+//    public void updateTotalDistance(int totalDistance) {
+//        this.totalDistance = totalDistance;
+//    }
 
     @Override
-    public void onLocationUpdate(double latitude, double longitude, double totalDistance) {
+    public void onLocationUpdate(double latitude, double longitude) {
+
+        // calculations
+        if (lastLongitude == 0) {
+            lastLatitude = latitude;
+            lastLongitude = longitude;
+        }
+
+        lastTotalDistance = lastTotalDistance + distance(lastLatitude, latitude, lastLongitude, longitude, 1, 1);
+        lastLatitude = latitude;
+        lastLongitude = longitude;
+
+        // set of result
         longitudeTextView.setText(getString(R.string.longitude, "" + longitude));
         latitudeTextView.setText(getString(R.string.latitude, "" + latitude));
-        totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + totalDistance));
+        totalDistanceTextView.setText(getString(R.string.total_distance_travelled, "" + lastTotalDistance));
+    }
+
+    /**
+     * Reference: <a href="https://stackoverflow.com/questions/3694380/calculating-distance-between-two-points-using-latitude-longitude/16794680#16794680">...</a>
+     * Calculate distance between two points in latitude and longitude taking
+     * into account height difference. If you are not interested in height
+     * difference pass 0.0. Uses Haversine method as its base.
+     * <p>
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     *
+     * @returns Distance in Meters
+     */
+    public static double distance(double lat1, double lat2, double lon1,
+                                  double lon2, double el1, double el2) {
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
     }
 
     // doesn't work
